@@ -1,8 +1,8 @@
 import 'dart:convert';
-
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_shortner/finctions.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -38,7 +38,6 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: EdgeInsets.only(
           left: size.width * 0.1,
           right: size.width * 0.1,
-          // top:
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -49,9 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(
-              height: 10,
-            ),
+           height(),
             TextFormField(
               controller: urlController,
               decoration: InputDecoration(
@@ -60,18 +57,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            const SizedBox(
-              height: 10,
-            ),
+           height(),
             Text(
               'Shortened Url : $shortenLink',
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(
-              height: 10,
-            ),
+            height(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -98,19 +91,27 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
-  Future<String> getUrl() async {
-    var url = urlController.text;
-    var response = await http.get(
-      Uri.parse(
-        'https://api.shrtco.de/v2/shorten?url=$url',
-      ),
+  SizedBox height() {
+    return const SizedBox(
+      height: 10,
     );
-    var jsonData = jsonDecode(response.body);
-
-    setState(() {
-      shortenLink = jsonData['result']['short_link'];
-    });
-    return 'Success';
   }
+
+  getUrl() async {
+    var url = urlController.text;
+    if (isValidUrl(url)) {
+      var response = await http.get(
+        Uri.parse(
+          'https://api.shrtco.de/v2/shorten?url=$url',
+        ),
+      );
+      var jsonData = jsonDecode(response.body);
+
+      setState(() {
+        shortenLink = jsonData['result']['short_link'];
+      });
+    } else {
+      showSnackbar(context, 'Enter a valid url');
+    }
+  } 
 }

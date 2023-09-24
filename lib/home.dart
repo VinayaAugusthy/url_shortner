@@ -1,6 +1,8 @@
+import 'dart:convert';
+
+import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -12,6 +14,11 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   TextEditingController urlController = TextEditingController();
   var shortenLink = '';
+  @override
+  void dispose() {
+    urlController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,8 +36,8 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Padding(
         padding: EdgeInsets.only(
-          left: size.width * 0.12,
-          right: size.width * 0.15,
+          left: size.width * 0.1,
+          right: size.width * 0.1,
           // top:
         ),
         child: Column(
@@ -48,28 +55,62 @@ class _HomeScreenState extends State<HomeScreen> {
             TextFormField(
               controller: urlController,
               decoration: InputDecoration(
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
               ),
             ),
             const SizedBox(
               height: 10,
             ),
-            const Row(
-              children: [Text('Shortened Url')],
+            Text(
+              'Shortened Url : $shortenLink',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(
               height: 10,
             ),
-            ElevatedButton(
-              onPressed: () {},
-              child: const Text(
-                'COPY URL',
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    getUrl();
+                  },
+                  child: const Text(
+                    'Click to Short',
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    FlutterClipboard.copy(shortenLink);
+                  },
+                  child: const Text(
+                    'Copy to Clipboard',
+                  ),
+                ),
+              ],
             )
           ],
         ),
       ),
     );
+  }
+
+  Future<String> getUrl() async {
+    var url = urlController.text;
+    var response = await http.get(
+      Uri.parse(
+        'https://api.shrtco.de/v2/shorten?url=$url',
+      ),
+    );
+    var jsonData = jsonDecode(response.body);
+
+    setState(() {
+      shortenLink = jsonData['result']['short_link'];
+    });
+    return 'Success';
   }
 }

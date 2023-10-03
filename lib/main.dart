@@ -12,9 +12,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
+        buttonTheme: const ButtonThemeData(buttonColor: Colors.teal),
         primarySwatch: Colors.teal,
-        appBarTheme: const AppBarTheme(color:Colors.teal ),
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        appBarTheme: const AppBarTheme(color: Colors.teal),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
         useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,

@@ -1,6 +1,5 @@
 # url_shortner
-
-A new Flutter project.
+A flutter application to shorten Urls using API integration
 
 ## Getting Started
 
